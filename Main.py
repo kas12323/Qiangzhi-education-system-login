@@ -17,13 +17,13 @@ user_headers = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9
                               'Chrome/93.0.4577.63 Safari/537.36 Edg/93.0.961.38'}
 
 
-def base64_encode(user, pwd):  # 将用户名和密码进行编码提交给服务器
+def base64_encode(user, pwd):  # Submit encoded username and password to server
     a = base64.b64encode(user.encode('utf-8'))
     b = base64.b64encode(pwd.encode('utf-8'))
     return a.decode('utf-8') + '%%%' + b.decode('utf-8')
 
 
-def login():  # 登录教务系统
+def login():
     global session, login_url, user_headers
     verify_code_url = login_url + '/verifycode.servlet'
     post_user_info_url = login_url + '/xk/LoginToXk'
@@ -32,10 +32,10 @@ def login():  # 登录教务系统
     with open('verifycode.jfif', 'wb') as verify_code_file:
         verify_code_file.write(get_verify_code.content)
         verify_code_file.close()
-    user_name = input('请输入用户名, 按回车确认\n')
-    user_pwd = input('请输入密码，按回车确认\n')
+    user_name = input('Enter your username, press enter to confirm.\n')
+    user_pwd = input('Enter your password, press enter to confirm.\n')
     os.system('start verifycode.jfif')
-    verify_code = input('即将打开验证码图片，请输入图片中的验证码，按回车确认\n')
+    verify_code = input('Enter the verifcation code in this pic, press enter to confirm.\n')
     os.system('del verifycode.jfif')
     data = {'userAccount': user_name,
             'userPassword': '',
@@ -45,7 +45,7 @@ def login():  # 登录教务系统
     return post_user_info
 
 
-def check_if_logged_in(login_page):  # 检查是否成功登录
+def check_if_logged_in(login_page):
     global main_page
     main_page = session.get(main_page_url, headers=user_headers)
     try:
@@ -55,15 +55,15 @@ def check_if_logged_in(login_page):  # 检查是否成功登录
         soup = BeautifulSoup(login_page.text, 'html.parser')
         wrong_info = soup.find_all(id="showMsg")[0].string
         if '验证码' in wrong_info:
-            print('验证码输入有误，请重新输入')
+            print('Wromg verifcation code, enter again.')
         elif '用户名' in wrong_info:
-            print('用户名或密码输入有误，请重新输入')
+            print('Wrong username or password, enter again.')
         else:
-            print('信息输入有误，请重新输入')
+            print('Wrong information, enteragain.')
         return True
 
 
-# 以下是主程序的开始
+# Start of the main program.
 if __name__ == '__main__':
     while check_if_logged_in(login()):
         pass
